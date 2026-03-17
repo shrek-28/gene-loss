@@ -1,0 +1,10 @@
+Bos_taurus
+Eschrichtius_robustus
+Eubalaena_glacialis
+Kogia_breviceps
+Hyperoodon_ampullatus
+Pseudorca_crassidens
+Lipotes_vexillifer
+Hippopotamus_amphibius
+Sus_scrofa
+Camelus_bactrianus
