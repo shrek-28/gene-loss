@@ -1,0 +1,13 @@
+Antilocapra_americano.fna
+Eubalaena_japonica.fna
+Giraffa_camelopardolis.fna
+Hydropotes_inermis.fna
+Megaptera_novaeangliae.fna
+Monodon_monoceros.fna
+Muntiacus_muntjak.fna
+Okapia_johnstoni.fna
+Platanista_minor.fna
+Pontoporia_blainvillei.fna
+Sousa_chinensis.fna
+Tragulas_javanicus.fna
+Ziphius_cavirostris.fna
