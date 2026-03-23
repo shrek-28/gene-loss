@@ -19,13 +19,26 @@ fasterq-dump --version
 ## downloading the SRA file 
 
 ## getting SRR id
+# bos taurus
 esearch -db sra -query SRX24621186 | efetch -format runinfo | cut -d ',' -f 1
 ## RESULT: SRR29097113
+# pseudorca crassidens
+esearch -db sra -query SRX25433668 | efetch -format runinfo | cut -d ',' -f 1
+## RESULT: SRR29940089
 
 ## installation
+# bos taurus
 prefetch --max-size 100G SRR29097113
 ## download is done with increased maximum download size 
+# pseudorca crassidens
+prefetch --max-size 100G SRR29940089
+nohup prefetch SRR29940089 > prefetch.log 2>&1 &
 
+## downloading using aspera
+ /home/ceglab27/.aspera/connect/bin/ascp -i /home/ceglab27/.aspera/connect/etc/asperaweb_id_dsa.openssh \
+     -QT -l 300m -P33001 \
+    era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/SRR299/089/SRR29940089/SRR29940089_subreads.fastq.gz \
+     .
 # -------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------------
 
@@ -63,6 +76,7 @@ make
 
 ## minimap2
 nohup bash -c "minimap2/minimap2 -ax map-hifi -t 16 Bos_taurus.fna SRR29097113.fastq.gz | samtools sort -@ 16 -o aln.bam" > minimap2.log 2>&1 &
+nohup bash -c "minimap2/minimap2 -ax map-pb -t 16 GCF_039906515.1_mPseCra1.hap1_genomic.fna SRR29940089_subreads.fastq.gz | samtools sort -@ 16 -o Pseudorca_crassidens.bam" > minimap2.log 2>&1 &
 
 ## checking if it is sorted
 samtools view -H aln.bam | grep SO
@@ -73,6 +87,10 @@ samtools index aln.bam
 
 ## checking chromosome patterns in bos taurus
 samtools idxstats aln.bam
+
+## CHECKING 
+samtools view -H Pseudorca_crassidens.bam | less -S
+## should contain @SQ lines 
 
 # -------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------------
@@ -118,9 +136,19 @@ nohup python3 scripts/scan_alignments.py \
 --outdir data/Bos_taurus_klumpy_results \
 --flag_excess_groups \
 > scan_alignments.log 2>&1 &
+## pseudorca crassidens
+nohup python3 scripts/scan_alignments.py \
+--species Pseudorca_crassidens \
+--bam data/Pseudorca_crassidens.bam \
+--annotation data/Pseudorca_crassidens.gtf \
+--threads 16 \
+--outdir data/Pseudorca_crassidens_klumpy_results \
+--flag_excess_groups \
+> scan_alignments.log 2>&1 &
 
 ## STEP 4 - ALIGNMENT PLOTS 
-python3 scripts/alignment_plots_progressive_new.py --bam data/Bos_taurus_files/aln.bam --tsv data/species_wise_klumpy_tables/Bos_taurus.tsv --outdir data/Bos_taurus_alignment_plots_progressive_new --table_dir data/Bos_taurus_alignment_tables_progressive_new --summary data/flanking_regions_table_progressive_new.tsv --annotation
+python3 scripts/alignment_plots_progressive_new.py --bam data/Bos_taurus_files/aln.bam --tsv data/species_wise_klumpy_tables/Bos_taurus.tsv --outdir data/Bos_taurus_alignment_plots_progressive_new --table_dir data/Bos_taurus_alignment_tables_progressive_new --summary data/flanking_regions_table_progressive_new.tsv --annotation 
+python3 scripts/alignment_plots.py --bam data/Pseudorca_crassidens.bam --tsv data/species_wise_klumpy_tables/Pseudorca_crassidens.tsv --outdir data/Pseudorca_crassidens_alignment_plots --table_dir data/Pseudorca_crassidens_alignment_tables --summary data/Pseudorca_crassidens_flanking_table.tsv --annotation data/Pseudorca_crassidens.gtf
 
 ## STEP 5 - ALIGNMENT METRICS
 python3 scripts/alignment_metrics_progressive.py --table_root data/Bos_taurus_alignment_tables_progressive --scan_alignments data/scan_alignments_results/Bos_taurus_Candidate_Regions.tsv --bam data/Bos_taurus_files/aln.bam --region_table data/species_wise_klumpy_tables/Bos_taurus.tsv --outdir data/Bos_taurus_alignment_metrics_progressive
