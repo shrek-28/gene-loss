@@ -1,0 +1,10 @@
+Bos_taurus
+Homo_sapiens
+Camelus_bactrianus
+Eschrichtius_robustus
+Eubalaena_glacialis
+Hippopotamus_amphibius
+Hyperoodon_ampullatus
+Kogia_breviceps
+Pseudorca_crassidens
+Sus_scrofa
